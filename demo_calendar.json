@@ -1,0 +1,32 @@
+{
+  "_note": "Busy scenario. in_hours is relative to the current hour so the demo always looks current.",
+  "events": [
+    {
+      "title": "CSE 214 Midterm",
+      "in_hours": 15,
+      "duration_hours": 2,
+      "description": "Covers trees, heaps, hashing"
+    },
+    {
+      "title": "Physics Lab Report due",
+      "in_hours": 20,
+      "duration_hours": 1
+    },
+    {
+      "title": "Study group",
+      "in_hours": 26,
+      "duration_hours": 2
+    },
+    {
+      "title": "Calc II Problem Set 6 due",
+      "in_hours": 40,
+      "duration_hours": 1
+    },
+    {
+      "title": "Nap - Sleep Agent",
+      "start": "2026-10-23T17:10:00-07:00",
+      "end": "2026-10-23T17:30:00-07:00",
+      "description": "20-min power nap before CSE 214 midterm prep. Wake up at the end, drink water, and get back to studying."
+    }
+  ]
+}

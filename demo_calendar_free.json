@@ -1,0 +1,7 @@
+{
+  "_note": "Light scenario: nothing urgent for days, so the agent should say go to bed.",
+  "events": [
+    {"title": "Gym", "in_hours": 34, "duration_hours": 1},
+    {"title": "History reading response due", "in_hours": 100, "duration_hours": 1}
+  ]
+}

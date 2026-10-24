@@ -1,0 +1,8 @@
+.env
+credentials.json
+token.json
+face_landmarker.task
+__pycache__/
+.venv/
+_old_versions/
+*.zip
