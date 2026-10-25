@@ -617,6 +617,7 @@ class App:
         self.topic_key(27)
 
     def after_nap(self, msg: str):
+        self.last_agent_call = 0.0           # no "rest" period after a nap: just the snooze below
         self.detector.recalibrate()          # you've probably moved; runs when the camera comes back
         self.snooze()                        # regular snooze while you wake up (camera stays off)
         self.show_banner(f"{msg} Snoozed {SNOOZE_MIN:g} min while you wake up.", 5)
@@ -960,6 +961,10 @@ class App:
         cv2.putText(frame, f"Quick check: {q['topic_label']}"[:wrap + 10], (x1 + 20, y1 + 30), FONT, 0.6,
                     (220, 220, 220), 1, cv2.LINE_AA)
         cv2.putText(frame, f"{self.quiz_idx + 1}/{len(qs)}", (x2 - 60, y1 + 30), FONT, 0.6, (220, 220, 220), 1, cv2.LINE_AA)
+        if self.quiz_choice is None:
+            hint = "Press 1-4 or click"
+            (hw, _), _ = cv2.getTextSize(hint, FONT, 0.45, 1)
+            cv2.putText(frame, hint, (x2 - 80 - hw, y1 + 30), FONT, 0.45, (180, 180, 180), 1, cv2.LINE_AA)
         y = y1 + 62
         for line in qlines:
             cv2.putText(frame, line, (x1 + 20, y), FONT, 0.65, (255, 255, 255), 2, cv2.LINE_AA)
@@ -972,7 +977,17 @@ class App:
                     bg = (40, 130, 40)
                 elif i == self.quiz_choice:
                     bg = (40, 40, 160)
-            self.button(frame, (x1 + 20, y, x2 - 20, y + 34), f"{i + 1}   {opt}", (lambda i=i: self.quiz_answer(i)), bg=bg)
+            bx1, bx2 = x1 + 20, x2 - 20
+            self.button(frame, (bx1, y, bx2, y + 34), "", (lambda i=i: self.quiz_answer(i)), bg=bg)
+            # key badge on the left, answer text after it: "[1]  4" can't be misread as "14"
+            cv2.rectangle(frame, (bx1 + 6, y + 5), (bx1 + 32, y + 29), (235, 235, 235), -1)
+            (kw, kh), _ = cv2.getTextSize(str(i + 1), FONT, 0.55, 2)
+            cv2.putText(frame, str(i + 1), (bx1 + 19 - kw // 2, y + 17 + kh // 2), FONT, 0.55, (40, 40, 40), 2, cv2.LINE_AA)
+            scale = 0.6
+            while cv2.getTextSize(opt, FONT, scale, 1)[0][0] > (bx2 - bx1) - 60 and scale > 0.35:
+                scale -= 0.03
+            (_, th), _ = cv2.getTextSize(opt, FONT, scale, 1)
+            cv2.putText(frame, opt, (bx1 + 46, y + 17 + th // 2), FONT, scale, (255, 255, 255), 1, cv2.LINE_AA)
             y += 42
         if answered:
             y += 22
