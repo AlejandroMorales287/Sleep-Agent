@@ -1,6 +1,6 @@
-# Sleep Agent
+# Last Call
 
-Studying late and nodding off? Sleep Agent watches for microsleeps through your webcam.
+Studying late and nodding off? Last Call watches for microsleeps through your webcam.
 When you keep drifting off, a Claude agent checks your Google Calendar and decides whether
 you should **go to bed**, **take a nap** (and books it), or do a **quick reset** because a
 deadline is too close to sleep.

@@ -344,9 +344,9 @@ def build_report(data: dict) -> str:
     esc = html.escape
     out = ['<!doctype html><html lang="en"><head><meta charset="utf-8">',
            '<meta name="viewport" content="width=device-width,initial-scale=1">',
-           f'<title>Sleep Agent report</title><style>{CSS}</style></head><body><main>']
+           f'<title>Last Call report</title><style>{CSS}</style></head><body><main>']
     if not nights:
-        out.append('<h1>Sleep Agent</h1><p class="sub">No sessions yet.</p></main></body></html>')
+        out.append('<h1>Last Call</h1><p class="sub">No sessions yet.</p></main></body></html>')
         return "".join(out)
 
     n = nights[0]
@@ -372,7 +372,7 @@ def build_report(data: dict) -> str:
                '</div></div>')
     if n["estimated"]:
         out.append('<p class="sub" style="margin:12px 0 0">Bed time uses your calendar\'s planned wake-up. '
-                   'Open Sleep Agent and it will ask when you actually got up.</p>')
+                   'Open Last Call and it will ask when you actually got up.</p>')
     if not n["bed"] and not n["naps"]:
         out.append('<p class="sub" style="margin:12px 0 0">Sleep is counted when you start a desk nap or '
                    'choose <b>Quit &amp; rest</b>.</p>')

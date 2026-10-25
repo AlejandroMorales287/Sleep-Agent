@@ -112,7 +112,7 @@ def stop_alarm():
 def notify(title: str, message: str):
     if notification:
         try:
-            notification.notify(title=title, message=message[:250], app_name="Sleep Agent", timeout=10)
+            notification.notify(title=title, message=message[:250], app_name="Last Call", timeout=10)
             return
         except Exception:
             pass

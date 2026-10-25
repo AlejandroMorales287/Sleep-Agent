@@ -1,4 +1,4 @@
-"""Sleep Agent: watches for microsleeps and asks Claude what you should do.
+"""Last Call: watches for microsleeps and asks Claude what you should do.
 
 Run:  python main.py
 
@@ -54,7 +54,7 @@ SPEAK = os.getenv("SPEAK_RECOMMENDATIONS", "true").lower() in ("1", "true", "yes
 SNOOZE_MIN = float(os.getenv("SNOOZE_MINUTES", "5"))
 SNOOZE_MAX_MIN = 60
 
-WINDOW = "Sleep Agent"
+WINDOW = "Last Call"
 DISPLAY_SCALE = float(os.getenv("DISPLAY_SCALE", "1.5"))  # window size only; detection still uses camera frames
 NAP_ALARM_MAX_MIN = float(os.getenv("NAP_ALARM_MAX_MINUTES", "20"))  # naps this short get an in-app alarm
 WAKE_REPEAT_S = float(os.getenv("WAKE_REPEAT_SECONDS", "60"))       # replay the wake alarm until "I'm up"
@@ -485,7 +485,7 @@ class App:
         self.waking_since = self.last_wake_alarm = time.time()
         print("[nap] time's up - wake up!")
         alerts.wake_alarm()
-        alerts.notify("Sleep Agent: nap's over", "Time to get back to it.")
+        alerts.notify("Last Call: nap's over", "Time to get back to it.")
         self.bring_to_front()
 
     def im_up(self):
@@ -685,7 +685,7 @@ class App:
             self.recommendation = rec
             self.banner = None
             label = ACTION_LABELS.get(rec.get("action"), "TAKE A BREAK")
-            alerts.notify(f"Sleep Agent: {label}", rec.get("message", ""))
+            alerts.notify(f"Last Call: {label}", rec.get("message", ""))
             if SPEAK:
                 alerts.speak(rec.get("message", ""))
             self.agent_busy = False
@@ -1094,7 +1094,7 @@ class App:
             raise SystemExit(f"Could not open camera {CAMERA_INDEX}. Try CAMERA_INDEX=1 in .env.")
         cv2.namedWindow(WINDOW)
         cv2.setMouseCallback(WINDOW, self.on_mouse)
-        print("Sleep Agent running. Calibrating for a few seconds: sit like you normally study and look at your screen.")
+        print("Last Call running. Calibrating for a few seconds: sit like you normally study and look at your screen.")
         placed = False
         shape = (480, 640, 3)   # last camera frame size, used for the black screen
         try:

@@ -21,7 +21,7 @@ from calendar_tool import get_calendar, now_local
 MODEL = os.getenv("CLAUDE_MODEL", "claude-sonnet-5-5")
 MAX_TURNS = 6
 
-SYSTEM_PROMPT = """You are Sleep Agent, a caring but practical study coach.
+SYSTEM_PROMPT = """You are Last Call, a caring but practical study coach.
 A webcam has detected that the user is nodding off (microsleeps = eyes closed for
 about a second or more while facing the screen). Studying through microsleeps is
 very inefficient: they are not absorbing material.
@@ -67,7 +67,7 @@ TOOLS = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "title": {"type": "string", "description": "e.g. 'Nap - Sleep Agent' or 'Sleep - Sleep Agent'"},
+                "title": {"type": "string", "description": "e.g. 'Nap - Last Call' or 'Sleep - Last Call'"},
                 "duration_minutes": {"type": "integer", "minimum": 5, "maximum": 720},
                 "start_in_minutes": {"type": "integer", "minimum": 0, "maximum": 240, "default": 0,
                                      "description": "Minutes from now until it starts (0 = right now)"},
