@@ -5,8 +5,10 @@ When you keep drifting off, a Claude agent checks your Google Calendar and decid
 you should **go to bed**, **take a nap** (and books it), or do a **quick reset** because a
 deadline is too close to sleep.
 
-**Privacy:** video never leaves your laptop. Face tracking runs locally; only short text like
-"3 microsleeps in 10 min" is sent to Claude.
+**Privacy:** video never leaves your laptop; face tracking runs locally. Claude only receives
+short text: fatigue counts and your upcoming calendar (when deciding what you should do), and your
+study topic plus recent window titles (when writing a quiz). The camera turns off completely while
+you're snoozed, napping, being woken up, or taking a quiz.
 
 ## Setup (Windows, PowerShell)
 
@@ -57,8 +59,13 @@ Points expire 10 minutes after they happen. At **2 points** the popup opens.
    quick reset. For sleep/nap it books the block; the code computes the exact times and adds
    them to the message, so the calendar and the advice always match.
 3. **Recommendation panel**
-   - Sleep/nap: **Quit & rest (Enter)** or **Undo - false alarm (F)**, which deletes the
-     booked event (Calendar API only, no Claude credits).
+   - Nap of 20 min or less: **Start nap (Enter)**. The app stays open, stops watching, and
+     counts down to the end of the calendar block. Then the window jumps to the front and a
+     louder version of your alarm plays 3 times, repeating every minute until **I'm up**.
+     Afterwards it snoozes 5 min while you wake up, then recalibrates.
+   - Longer nap or sleep: **Quit & rest (Enter)**. You're heading to bed, so set your own alarm.
+   - Any booked block: **Undo - false alarm (F)** deletes the event (Calendar API only, no
+     Claude credits).
    - Quick reset: **Done, back to work (Enter)** or **False alarm (F)**.
 4. After real advice it stays quiet for 5 minutes. False alarms don't start that cooldown.
 
@@ -68,10 +75,44 @@ Points expire 10 minutes after they happen. At **2 points** the popup opens.
 |---|---|
 | S / button | Snooze 5 min (press again to stack, max 60) |
 | U | Resume watching now |
+| R | Open the session report |
+| T | Change your study topic |
+| Z | Quiz me now (test / demo the quiz without napping) |
 | C | Recalibrate |
 | A | Ask the agent now (demo shortcut) |
 | D | Debug overlay: eye opening, gaze, head tilt |
 | Q | Quit |
+
+## Wake-up quiz
+
+At startup the app asks **"What are you studying tonight?"** (optional: Enter to save, Esc to
+skip, **T** to change it later). While you study it also notes the title of the window you're in
+every few seconds (e.g. `CSE214_Lecture7_Heaps.pdf`); no screen capture. The quiz centers on the most
+recent window (what you were looking at before the break); your typed topic fills in the rest.
+
+After a **desk nap** or a **quick reset**, Claude writes 3 multiple-choice questions on that topic.
+The quiz is generated while you nap (or as soon as quick-reset advice appears), so it's usually
+ready instantly. Answer with **1–4**, **Enter** for the next question, **Esc** to skip at any time.
+Scores show up in the session report. If a quiz can't be made, a banner says why. Turn it off with `QUIZ_ENABLED=false`, or keep the quiz but
+skip the startup question with `ASK_TOPIC_AT_START=false`.
+
+## Session report
+
+When you quit (after a session of 1+ minute), `reports/report.html` opens in your browser:
+
+- **Sleep for the night:** desk naps (Start nap until the alarm) plus time in bed (Quit & rest until
+  you got up), added up across every session that night. A night runs noon to noon.
+- **Timeline** of studying, naps and bed, with each microsleep marked.
+- **Fatigue stats**, microsleeps by hour, and everything the agent told you.
+- **Past nights** table.
+
+Bed time starts as an estimate from your calendar's planned wake-up. The next time you open the
+app it asks **"When did you get up?"** (−/+ adjust by 15 min, Enter confirms, Esc keeps the
+estimate), and the report switches to your real number.
+
+Only two files are ever kept, both in `reports/` (git-ignored): `sleep_history.json` (all
+sessions) and `report.html` (rewritten each time). Set `REPORT_ON_QUIT=false` to stop it
+opening automatically.
 
 ## Files
 
@@ -82,6 +123,8 @@ Points expire 10 minutes after they happen. At **2 points** the popup opens.
 | `agent.py` | Claude tool-use loop: read calendar, book/undo blocks, give advice |
 | `calendar_tool.py` | Google Calendar + offline demo calendar |
 | `alerts.py` | Alarm sound, chime, Windows notification, text-to-speech |
+| `report.py` | Session log, night totals, and the HTML report |
+| `quiz.py` | Wake-up quiz: window titles + one Claude call for 3 questions |
 | `demo_calendar*.json` | Offline scenarios: busy (midterm tomorrow) and free |
 
 ## Google Calendar
@@ -123,6 +166,7 @@ USE_DEMO_CALENDAR=true      # optional: no Wi-Fi or Google sign-in needed
 2. Look down at a notebook: "not counted". Close your eyes briefly: soft chime.
 3. Close your eyes and let your head drop: **"NODDING OFF"**, then the alarm and popup.
 4. Press **F**: false alarm, nothing sent to Claude. Repeat and let the countdown run.
-5. The agent reads the calendar, books a nap and explains why. Show the event in Google Calendar.
+5. The agent reads the calendar, books a 20-min nap and explains why. Show the event in Google
+   Calendar, press **Enter** to start the nap timer.
 6. Press **F** on the panel: the event disappears. Switch to `demo_calendar_free.json` to show
    "go to bed" instead.

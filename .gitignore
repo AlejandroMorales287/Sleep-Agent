@@ -6,3 +6,5 @@ __pycache__/
 .venv/
 _old_versions/
 *.zip
+wake_alarm.wav
+reports/

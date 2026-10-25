@@ -35,6 +35,9 @@ Process:
      can survive a full night. Sleep beats cramming for memory consolidation.
    - "nap": something important within ~24h AND there's time for a nap. Prefer 20 min
      (no grogginess) or 90 min (one full cycle). Avoid 45-60 min naps (sleep inertia).
+     Naps of 20 minutes or less happen right at the desk: the app runs a timer and wakes
+     the user with an alarm, so they're the go-to when time is tight. Longer naps and
+     "sleep" mean going to bed (the app closes), so the user needs their own alarm.
    - "quick_reset": deadline/exam is within a few hours and there's truly no time:
      cold water on face, glass of water, 5 min walk or jumping jacks, bright light.
 3. If you chose sleep or nap, you MAY call create_calendar_event to block it.

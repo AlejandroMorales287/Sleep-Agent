@@ -10,6 +10,8 @@ import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ALARM_SOUND = os.path.join(HERE, os.getenv("ALARM_SOUND", "alarm.wav"))
+WAKE_SOUND = os.path.join(HERE, "wake_alarm.wav")   # generated from ALARM_SOUND
+WAKE_REPEATS = 3
 
 try:
     import winsound  # Windows only, stdlib
@@ -55,6 +57,48 @@ def alarm():
         except Exception as e:
             print(f"[alerts] couldn't play {ALARM_SOUND}: {e}")
     beep("urgent")
+
+
+def _build_wake_sound() -> str | None:
+    """Make wake_alarm.wav from the alarm sound: louder (soft-limited, no harsh clipping)
+    and repeated WAKE_REPEATS times with short gaps. Rebuilt if alarm.wav changes."""
+    if not os.path.exists(ALARM_SOUND):
+        return None
+    if os.path.exists(WAKE_SOUND) and os.path.getmtime(WAKE_SOUND) >= os.path.getmtime(ALARM_SOUND):
+        return WAKE_SOUND
+    try:
+        import wave
+        import numpy as np
+        with wave.open(ALARM_SOUND, "rb") as w:
+            params = w.getparams()
+            raw = w.readframes(w.getnframes())
+        if params.sampwidth != 2:
+            return None  # only 16-bit PCM supported; caller falls back to the plain alarm
+        x = np.frombuffer(raw, dtype=np.int16).astype(np.float32) / 32768.0
+        x = np.tanh(1.6 * x) / np.tanh(1.6)          # ~+5 dB louder, peaks stay below clipping
+        gap = np.zeros(int(params.framerate * 0.5) * params.nchannels, dtype=np.float32)
+        y = np.concatenate([x, gap] * (WAKE_REPEATS - 1) + [x])
+        with wave.open(WAKE_SOUND, "wb") as w:
+            w.setparams(params)
+            w.writeframes((np.clip(y, -1, 1) * 32767).astype(np.int16).tobytes())
+        return WAKE_SOUND
+    except Exception as e:
+        print(f"[alerts] couldn't build wake sound: {e}")
+        return None
+
+
+def wake_alarm():
+    """Nap's over: louder alarm, played WAKE_REPEATS times. Async."""
+    path = _build_wake_sound()
+    if winsound and path:
+        try:
+            winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_NODEFAULT)
+            return
+        except Exception as e:
+            print(f"[alerts] couldn't play wake sound: {e}")
+    for _ in range(WAKE_REPEATS):
+        alarm()
+        time.sleep(3)
 
 
 def stop_alarm():

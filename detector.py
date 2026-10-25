@@ -274,6 +274,15 @@ class FatigueDetector:
             self._long_reported = True
             events.append(Event("long_microsleep", closed_for, now))
 
+    def reset_tracking(self):
+        """Forget in-progress closures/stillness/yawns (e.g. after the camera was off),
+        so the time gap isn't mistaken for a long eye closure or motionless spell.
+        Calibration is kept."""
+        self._reset_closure()
+        self._reset_stillness()
+        self._yawn_since = None
+        self._yawn_reported = False
+
     def _reset_stillness(self):
         self._still_anchor = None
         self._still_smooth = None
